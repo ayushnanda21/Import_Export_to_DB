@@ -11,7 +11,7 @@ const excelToJson = require("convert-excel-to-json");
 //multer storage
 const storage = multer.diskStorage({
     destination:(req,file,cb)=>{  
-        cb(null,'./public/uploads');  
+        cb(null, './public/uploads');  
     },  
     filename:(req,file,cb)=>{  
         cb(null, file.originalname);  
@@ -35,9 +35,10 @@ app.use(express.static('./public'));
 
 
 
+
 //upload excel file
 app.post('/uploadfile', upload.single("uploadfile"), (req, res) =>{
-    importExcelData2MongoDB(__dirname + '/public/uploads/' + req.file.filename);
+    importExcelData2MongoDB(__dirname  + '/public/uploads/'  + req.file.filename);
     res.status(200).json({
         'msg': 'File imported to database successfully',
         'file': req.file
@@ -45,40 +46,42 @@ app.post('/uploadfile', upload.single("uploadfile"), (req, res) =>{
 
 });
 
+
+
 // Import Excel File to MongoDB database
-function importExcelData2MongoDB(filePath){
+function importExcelData2MongoDB(filePath, req){
     // -> Read Excel File to Json Data
     const excelData = excelToJson({
-    sourceFile: filePath,
+    sourceFile:  fs.readFileSync(filePath),
     sheets:[{
     // Excel Sheet Name
-    name: 'Product',
+    name: 'demo',
     // Header Row -> be skipped and will not be present at our result object.
     header:{
     rows: 1
     },
     // Mapping columns to keys
     columnToKey: {
-    A: '_id',
-    B: 'name',
-    C: 'email',
-    D: 'age'
-    },
+    A: 'name',
+    B: 'email',
+    C: 'age'
+    }
 
     }]
 });
     // -> Log Excel Data to Console
+    console.log(filePath);
     console.log(excelData);
 
 
 
-//Insert jsonobject to mongodb
-userModel.insertMany(excelData.Product , (err, res)=>{
+// //Insert jsonobject to mongodb
+userModel.insertMany(excelData.demo, (err, res)=>{
     if(err){
         console.log(err);
     }
 
-    console.log("Number of products inserted: " + res.insertedCount);
+    console.log("Inserted Successfully");
 });
 
 

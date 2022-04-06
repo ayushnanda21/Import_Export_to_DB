@@ -35,7 +35,6 @@ app.use(express.static('./public'));
 
 
 
-
 //upload excel file
 app.post('/uploadfile', upload.single("uploadfile"), (req, res) =>{
     importExcelData2MongoDB(__dirname  + '/public/uploads/'  + req.file.filename);
@@ -46,16 +45,14 @@ app.post('/uploadfile', upload.single("uploadfile"), (req, res) =>{
 
 });
 
-
-
 // Import Excel File to MongoDB database
-function importExcelData2MongoDB(filePath, req){
+function importExcelData2MongoDB(filePath){
     // -> Read Excel File to Json Data
     const excelData = excelToJson({
-    sourceFile:  fs.readFileSync(filePath),
+    sourceFile: filePath,
     sheets:[{
     // Excel Sheet Name
-    name: 'demo',
+    name: 'Sheet1',
     // Header Row -> be skipped and will not be present at our result object.
     header:{
     rows: 1
@@ -70,13 +67,10 @@ function importExcelData2MongoDB(filePath, req){
     }]
 });
     // -> Log Excel Data to Console
-    console.log(filePath);
     console.log(excelData);
 
-
-
 // //Insert jsonobject to mongodb
-userModel.insertMany(excelData.demo, (err, res)=>{
+userModel.insertMany(excelData.Sheet1 , (err, res)=>{
     if(err){
         console.log(err);
     }
